@@ -14,7 +14,9 @@ const Home = () => {
   const [selectedTime, setSelectedTime] = useState('')
   const [TimStamp, setTimStamp] = useState('')
   const [alarmsData, setAlarmsData] = useState([])
+  const [typeAlarm, setTypeAlarm] = useState('')
   const alarmPath = '/Timbre/alarms'
+  const TalarmPath = '/Timbre/Talarms'
 
   const handleChangeTime = (event) => {
     const { value } = event.target
@@ -106,6 +108,7 @@ const Home = () => {
 
       // Crear la nueva alarma en la base de datos
       await writeToRealtimeDatabase(`${alarmPath}/${newAlarmName}`, TimStamp)
+      await writeToRealtimeDatabase(`${TalarmPath}/${newAlarmName}`, typeAlarm)
     }
     pullAlarms()
   }
@@ -229,6 +232,20 @@ const Home = () => {
               onChange={handleChangeTime}
               className='inputDate'
             />
+            <label className='inputTitle'>
+                Tipo de alarma:
+              </label>
+              <select
+                value={typeAlarm}
+                onChange={(e) => setTypeAlarm(e.target.value)}
+                required
+                className='input-text'
+              >
+                <option value=''>SELECCIONAR</option>
+                <option value='1'>CAMBIO DE CLASE</option>
+                <option value='2'>SALIDA </option>
+                <option value='3'>DESCANSO </option>
+              </select>
             <button className='saveAlarm' onClick={handleSave}>Guardar</button>
           </div>
         </section>
