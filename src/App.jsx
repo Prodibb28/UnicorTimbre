@@ -17,8 +17,7 @@ const App = () => {
 
   return (
     <Router>
-      <div>
-        <section>
+
           <Routes>
             {!isAuthenticated
               ? (
@@ -29,8 +28,7 @@ const App = () => {
                 )}
             <Route path='/Home' element={<Home />} />
           </Routes>
-        </section>
-      </div>
+      
     </Router>
   )
 }

@@ -85,33 +85,44 @@ const Home = () => {
   }
 
   const handleSave = async () => {
-    const alarmsSnapshot = await getValuesFromRealtimeDatabase(alarmPath)
-    const alarmsArray = Object.values(alarmsSnapshot)
-    console.log(alarmsSnapshot)
-    // Verificar si ya existe una alarma con el mismo valor de horas y minutos
-    const hasDuplicateTime = alarmsArray.some(alarm => {
-      const alarmDate = new Date(alarm)
-      const selectedDate = new Date(TimStamp)
-
-      return (
-        alarmDate.getHours() === selectedDate.getHours() &&
-        alarmDate.getMinutes() === selectedDate.getMinutes()
-      )
-    })
-
-    if (!hasDuplicateTime && TimStamp !== '') {
-      // Obtener el tamaño actual de las alarmas
-      const alarmsCount = alarmsArray.length
-
-      // Crear un nuevo nombre para la alarma
-      const newAlarmName = `alarm_${alarmsCount + 1}`
-
-      // Crear la nueva alarma en la base de datos
-      await writeToRealtimeDatabase(`${alarmPath}/${newAlarmName}`, TimStamp)
-      await writeToRealtimeDatabase(`${TalarmPath}/${newAlarmName}`, typeAlarm)
+    const alarmsSnapshot = await getValuesFromRealtimeDatabase(alarmPath);
+  
+    if (alarmsSnapshot) { // Verifica si alarmsSnapshot no es nulo
+      const alarmsArray = Object.values(alarmsSnapshot);
+      console.log(alarmsSnapshot);
+      
+      // Verificar si ya existe una alarma con el mismo valor de horas y minutos
+      const hasDuplicateTime = alarmsArray.some(alarm => {
+        const alarmDate = new Date(alarm);
+        const selectedDate = new Date(TimStamp);
+  
+        return (
+          alarmDate.getHours() === selectedDate.getHours() &&
+          alarmDate.getMinutes() === selectedDate.getMinutes()
+        );
+      });
+  
+      if (!hasDuplicateTime && TimStamp !== '') {
+        // Obtener el tamaño actual de las alarmas
+        const alarmsCount = alarmsArray.length;
+        console.log(alarmsCount);
+        // Crear un nuevo nombre para la alarma
+        const newAlarmName = `alarm_${alarmsCount !== null ? alarmsCount + 1 : 1}`;
+  
+        // Crear la nueva alarma en la base de datos
+        await writeToRealtimeDatabase(`${alarmPath}/${newAlarmName}`, TimStamp);
+        await writeToRealtimeDatabase(`${TalarmPath}/${newAlarmName}`, typeAlarm);
+      }
+    } else {
+      // Si alarmsSnapshot es nulo, crea la primera alarma
+      const newAlarmName = 'alarm_1';
+      await writeToRealtimeDatabase(`${alarmPath}/${newAlarmName}`, TimStamp);
+      await writeToRealtimeDatabase(`${TalarmPath}/${newAlarmName}`, typeAlarm);
     }
-    pullAlarms()
-  }
+    
+    pullAlarms();
+  };
+  
 
   useEffect(() => {
     const unsubscribe = onSnapshot(collection(fs, 'regTimbre'), (snapshot) => {
